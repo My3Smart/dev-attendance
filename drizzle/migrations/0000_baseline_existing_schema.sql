@@ -1,0 +1,1 @@
+-- Baseline: the attendance tables (students, attendance, absence_alerts, settings, whatsapp_messages, whatsapp_webhook_events) already exist in this database from the project setup, so no schema change is needed here.
