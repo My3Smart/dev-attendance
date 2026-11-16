@@ -16,20 +16,20 @@ const DEFAULT_URL =
 const TZ = "Asia/Kuala_Lumpur";
 
 // ======================================================
-// HARDCODED STUDENT CONFIGURATION
+// HARDCODED STUDENT CONFIGURATION (not used — data now comes from the database)
 // ======================================================
 
-interface Student {
-  name: string;
-  parentPhone: string;
-}
-
-const HARDCODED_STUDENTS: Record<string, Student> = {
-  "0174146308": {
-    name: "Ali bin Abu",
-    parentPhone: "0179407006",
-  },
-};
+// interface Student {
+//   name: string;
+//   parentPhone: string;
+// }
+// 
+// const HARDCODED_STUDENTS: Record<string, Student> = {
+//   "0174146308": {
+//     name: "Ali bin Abu",
+//     parentPhone: "0179407006",
+//   },
+// };
 
 // ======================================================
 // MESSAGE TEMPLATES
@@ -47,13 +47,13 @@ export const TEMPLATES = {
 // STUDENT LOOKUP
 // ======================================================
 
-export function getHardcodedStudent(
-  cardNumber: string
-): Student | null {
-  const card = cardNumber.replace(/\D/g, "");
-
-  return HARDCODED_STUDENTS[card] ?? null;
-}
+// export function getHardcodedStudent(
+//   cardNumber: string
+// ): Student | null {
+//   const card = cardNumber.replace(/\D/g, "");
+// 
+//   return HARDCODED_STUDENTS[card] ?? null;
+// }
 
 // ======================================================
 // WHATSAPP CHAT ID
@@ -187,34 +187,34 @@ export async function notifyParents(
 // AUTOMATIC HARDCODED STUDENT NOTIFICATION
 // ======================================================
 
-export async function notifyHardcodedStudentArrival(
-  cardNumber: string
-): Promise<boolean> {
-  const student = getHardcodedStudent(cardNumber);
-
-  if (!student) {
-    return false;
-  }
-
-  const message = TEMPLATES.arrival(
-    student.name,
-    arrivalTime()
-  );
-
-  console.log(
-    "[attendance] Student detected:",
-    student.name
-  );
-
-  console.log(
-    "[attendance] Parent number:",
-    student.parentPhone
-  );
-
-  await notifyParents(
-    [student.parentPhone],
-    message
-  );
-
-  return true;
-}
+// export async function notifyHardcodedStudentArrival(
+//   cardNumber: string
+// ): Promise<boolean> {
+//   const student = getHardcodedStudent(cardNumber);
+// 
+//   if (!student) {
+//     return false;
+//   }
+// 
+//   const message = TEMPLATES.arrival(
+//     student.name,
+//     arrivalTime()
+//   );
+// 
+//   console.log(
+//     "[attendance] Student detected:",
+//     student.name
+//   );
+// 
+//   console.log(
+//     "[attendance] Parent number:",
+//     student.parentPhone
+//   );
+// 
+//   await notifyParents(
+//     [student.parentPhone],
+//     message
+//   );
+// 
+//   return true;
+// }
