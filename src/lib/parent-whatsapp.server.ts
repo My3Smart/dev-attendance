@@ -1,6 +1,6 @@
 // Sends WhatsApp messages to parents through the school's local WhatsApp API.
 
-const DEFAULT_URL = "http://192.168.1.6:3000/api/sendText";
+const DEFAULT_URL = "https://pda-spots-desert-excessive.trycloudflare.com/api/sendText";
 const TZ = "Asia/Kuala_Lumpur";
 
 export const TEMPLATES = {
