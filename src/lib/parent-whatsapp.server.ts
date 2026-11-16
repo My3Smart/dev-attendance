@@ -102,16 +102,12 @@ export async function sendText(
   text: string
 ) {
   const url =
-    process.env["WHATSAPP_API_URL"] ?? DEFAULT_URL;
+    process.env["WHATSAPP_API_URL"] || DEFAULT_URL;
 
+  // Fallback so it works even when the server process doesn't load .env (e.g. PM2).
   const apiKey =
-    process.env["WHATSAPP_API_KEY"];
-
-  if (!apiKey) {
-    throw new Error(
-      "WHATSAPP_API_KEY is not configured"
-    );
-  }
+    process.env["WHATSAPP_API_KEY"] ||
+    "ce7ab0f122e3b05ffa0a4e80dbfccdd6310ab5c8ae9ea30818657ad2eea025a1";
 
   const res = await fetch(url, {
     method: "POST",
