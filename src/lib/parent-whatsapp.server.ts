@@ -1,28 +1,80 @@
-// Sends WhatsApp messages to parents through the school's local WhatsApp API.
 
-const DEFAULT_URL = "https://pda-spots-desert-excessive.trycloudflare.com/api/sendText";
+/**
+ * WhatsApp Notification Service
+ *
+ * Sends WhatsApp messages to parents through the school's local WhatsApp API.
+ *
+ * HARDCODED TEST STUDENT:
+ * NFC Card : 0174146308
+ * Student  : Ali bin Abu
+ * Parent   : 0122089417
+ */
+
+const DEFAULT_URL =
+  "https://pda-spots-desert-excessive.trycloudflare.com/api/sendText";
+
 const TZ = "Asia/Kuala_Lumpur";
+
+// ======================================================
+// HARDCODED STUDENT CONFIGURATION
+// ======================================================
+
+interface Student {
+  name: string;
+  parentPhone: string;
+}
+
+const HARDCODED_STUDENTS: Record<string, Student> = {
+  "0174146308": {
+    name: "Ali bin Abu",
+    parentPhone: "0179407006",
+  },
+};
+
+// ======================================================
+// MESSAGE TEMPLATES
+// ======================================================
 
 export const TEMPLATES = {
   arrival: (name: string, time: string) =>
-    ` ${name} telah mengetik pada ${time} di <school id> . Untuk Melihat Butiran Kehadiran Anak Anda , Sila Log Masuk Ke  https://login.skowla.com`,
+    `${name} telah mengetik pada ${time} di <school id>. Untuk Melihat Butiran Kehadiran Anak Anda, Sila Log Masuk Ke https://login.skowla.com`,
 
   absent: (name: string, date: string) =>
     `Hello parent. Our records show that your child ${name} has not checked in at school today, ${date}. Please contact the school if this is unexpected.`,
-};  
+};
+
+// ======================================================
+// STUDENT LOOKUP
+// ======================================================
+
+export function getHardcodedStudent(
+  cardNumber: string
+): Student | null {
+  const card = cardNumber.replace(/\D/g, "");
+
+  return HARDCODED_STUDENTS[card] ?? null;
+}
+
+// ======================================================
+// WHATSAPP CHAT ID
+// ======================================================
 
 export function toChatId(num: string): string | null {
   let d = num.replace(/\D/g, "");
 
   if (!d) return null;
 
-  // 013... -> 6013...
+  // Malaysian phone number: 0123456789 -> 60123456789
   if (d.startsWith("0")) {
     d = "6" + d;
   }
 
   return `${d}@c.us`;
 }
+
+// ======================================================
+// DATE AND TIME
+// ======================================================
 
 export function arrivalTime(date = new Date()) {
   return date.toLocaleTimeString("en-US", {
@@ -41,7 +93,14 @@ export function absentDate(date = new Date()) {
   });
 }
 
-export async function sendText(chatId: string, text: string) {
+// ======================================================
+// SEND WHATSAPP MESSAGE
+// ======================================================
+
+export async function sendText(
+  chatId: string,
+  text: string
+) {
   const url =
     process.env["WHATSAPP_API_URL"] ?? DEFAULT_URL;
 
@@ -84,37 +143,78 @@ export async function sendText(chatId: string, text: string) {
   }
 }
 
-/**
- * Sends to every number.
- * Never throws so attendance check-in is never blocked
- * if WhatsApp is unavailable.
- */
+// ======================================================
+// NOTIFY PARENTS
+// ======================================================
+
 export async function notifyParents(
   numbers: string[],
   text: string
 ) {
   await Promise.all(
-    numbers.map(async (n) => {
-      const chatId = toChatId(n);
+    numbers.map(async (number) => {
+      const chatId = toChatId(number);
 
       if (!chatId) {
-        console.error("[whatsapp] Invalid phone number:", n);
+        console.error(
+          "[whatsapp] Invalid phone number:",
+          number
+        );
         return;
       }
 
       try {
         await sendText(chatId, text);
+
         console.log(
           "[whatsapp] Message sent:",
           chatId
         );
-      } catch (e) {
+      } catch (error) {
         console.error(
           "[whatsapp]",
           chatId,
-          e instanceof Error ? e.message : e
+          error instanceof Error
+            ? error.message
+            : error
         );
       }
     })
   );
+}
+
+// ======================================================
+// AUTOMATIC HARDCODED STUDENT NOTIFICATION
+// ======================================================
+
+export async function notifyHardcodedStudentArrival(
+  cardNumber: string
+): Promise<boolean> {
+  const student = getHardcodedStudent(cardNumber);
+
+  if (!student) {
+    return false;
+  }
+
+  const message = TEMPLATES.arrival(
+    student.name,
+    arrivalTime()
+  );
+
+  console.log(
+    "[attendance] Student detected:",
+    student.name
+  );
+
+  console.log(
+    "[attendance] Parent number:",
+    student.parentPhone
+  );
+
+  await notifyParents(
+    [student.parentPhone],
+    message
+  );
+
+  return true;
 }
