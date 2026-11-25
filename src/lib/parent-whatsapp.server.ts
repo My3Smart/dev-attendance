@@ -35,6 +35,8 @@ const TZ = "Asia/Kuala_Lumpur";
 // MESSAGE TEMPLATES
 // ======================================================
 
+
+//hello cobaan
 export const TEMPLATES = {
   arrival: (name: string, time: string) =>
     `${name} telah mengetik pada ${time} di <school id>. Untuk Melihat Butiran Kehadiran Anak Anda, Sila Log Masuk Ke https://login.skowla.com`,
@@ -42,7 +44,7 @@ export const TEMPLATES = {
   absent: (name: string, date: string) =>
     `Hello parent. Our records show that your child ${name} has not checked in at school today, ${date}. Please contact the school if this is unexpected.`,
 };
-
+//hello
 // ======================================================
 // STUDENT LOOKUP
 // ======================================================
