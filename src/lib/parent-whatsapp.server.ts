@@ -11,7 +11,7 @@
  */
 
 const DEFAULT_URL =
-  "https://pda-spots-desert-excessive.trycloudflare.com/api/sendText";
+  "https://wahaha.skowla.com/api/sendText";
 
 const TZ = "Asia/Kuala_Lumpur";
 

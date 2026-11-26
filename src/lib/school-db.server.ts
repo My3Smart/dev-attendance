@@ -1,21 +1,57 @@
+// import mysql from "mysql2/promise";
+
+// // Direct connection to the school's MySQL database (students + records tables).
+// let pool: mysql.Pool | null = null;
+
+// function getPool() {
+//   if (!pool) {
+//     pool = mysql.createPool({
+//       host: process.env["DB_HOST"] ?? "72.61.151.99",
+//       port: Number(process.env["DB_PORT"] ?? 3306),
+//       database: process.env["DB_DATABASE"] ?? "skoola",
+//       user: process.env["DB_USERNAME"] ?? "root",
+//       password: process.env["DB_PASSWORD"] ?? "root",
+//       connectionLimit: 3,
+//       connectTimeout: 10000,
+//       disableEval: true,
+//     });
+//   }
+//   return pool;
+// }
+
 import mysql from "mysql2/promise";
 
-// Direct connection to the school's MySQL database (students + records tables).
 let pool: mysql.Pool | null = null;
 
 function getPool() {
   if (!pool) {
+    const host = process.env["DB_HOST"];
+    const database = process.env["DB_DATABASE"];
+    const user = process.env["DB_USERNAME"];
+    const password = process.env["DB_PASSWORD"];
+
+    if (!host || !database || !user || password === undefined) {
+      throw new Error("Missing school database environment configuration");
+    }
+
     pool = mysql.createPool({
-      host: process.env["DB_HOST"] ?? "72.61.151.99",
+      host,
       port: Number(process.env["DB_PORT"] ?? 3306),
-      database: process.env["DB_DATABASE"] ?? "skoola",
-      user: process.env["DB_USERNAME"] ?? "root",
-      password: process.env["DB_PASSWORD"] ?? "root",
+      database,
+      user,
+      password,
       connectionLimit: 3,
       connectTimeout: 10000,
       disableEval: true,
     });
+
+    console.log("[school-db] Database configured:", {
+      host,
+      database,
+      user,
+    });
   }
+
   return pool;
 }
 
